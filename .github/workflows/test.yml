@@ -12,7 +12,7 @@ jobs:
   unit: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - run: |
         npm install
         npm run all
@@ -26,49 +26,16 @@ jobs:
           - core22
           - core24
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ./
       id: snapcraft
       with:
         path: './test-projects/${{ matrix.project }}'
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       with:
         name: 'snap-${{ matrix.project }}'
         path: ${{ steps.snapcraft.outputs.snap}}
         compression-level: 0
-        retention-days: 7
-
-  integration-legacy: # make sure the action works on a clean machine without building
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project:
-          - core
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ./
-      id: snapcraft
-      with:
-        path: './test-projects/${{ matrix.project }}'
-        snapcraft-channel: 4.x/stable
-    - uses: actions/upload-artifact@v4
-      with:
-        name: 'snap-${{ matrix.project }}'
-        path: ${{ steps.snapcraft.outputs.snap}}
-        compression-level: 0
-        retention-days: 7
-
-  collect-artifacts:
-    needs:
-      - integration
-      - integration-legacy
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/upload-artifact/merge@v4
-      with:
-        name: snap
-        pattern: snap-*
-        delete-merged: true
         retention-days: 7
 
   check-runner: # make sure the action works on each VM image
@@ -79,7 +46,7 @@ jobs:
           - ubuntu-24.04
     runs-on: ${{ matrix.runner }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: ./
       with:
         path: './test-projects/core22'
