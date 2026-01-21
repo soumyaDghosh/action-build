@@ -23,6 +23,9 @@ inputs:
   enable-github-cache:
     description: >
       Whether to enable the usage of GitHub Actions Cache.
+
+      This is useful when using a build tool that supports GitHub Actions
+      caching (e.g. sccache) to speed up builds.
     default: 'false'
   snapcraft-channel:
     description: >

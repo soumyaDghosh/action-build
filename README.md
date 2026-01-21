@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/snapcore/action-build/actions"><img alt="snapcraft-build-action status" src="https://github.com/snapcore/action-build/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/soumyaDghosh/action-build/actions"><img alt="snapcraft-build-action status" src="https://github.com/soumyaDghosh/action-build/workflows/build-test/badge.svg"></a>
 </p>
 
 # Snapcraft Build Action
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: snapcore/action-build@v1
+    - uses: soumyaDghosh/action-build@master
 ```
 
 This will install and configure LXD and Snapcraft, then invoke
@@ -26,7 +26,7 @@ the workflow:
 
 ```yaml
 ...
-    - uses: snapcore/action-build@v1
+    - uses: soumyaDghosh/action-build@master
       id: snapcraft
     - uses: actions/upload-artifact@v3
       with:
@@ -57,7 +57,7 @@ parameter:
 
 ```yaml
 ...
-    - uses: snapcore/action-build@v1
+    - uses: soumyaDghosh/action-build@master
       with:
         path: path-to-snapcraft-project
 ```
@@ -73,6 +73,12 @@ vulnerable versions of Ubuntu packages.
 
 This can be turned off by setting the `build-info` parameter to
 `false`.
+
+### `enable-github-cache`
+
+Whether to enable the usage of GitHub Actions Cache.  This is useful
+when using a build tool that supports GitHub Actions caching (e.g.
+sccache) to speed up builds.
 
 ### `snapcraft-channel`
 
@@ -111,7 +117,31 @@ An example workflow with UA token stored as secret `UA_TOKEN`:
 
 ```yaml
 ...
-    - uses: snapcore/action-build@v1
+    - uses: soumyaDghosh/action-build@master
       with:
         ua-token: ${{ secrets.UA_TOKEN }}
+```
+
+## Environment Variables
+
+The action will check the environment for variables and pass them
+through to the build environment.  This can be used to pass credentials
+or other configuration to the build process.
+
+Some variables are blocked and will not be passed through:
+* `PATH`
+* `HOME`
+* `SHELL`
+* `USER`
+* `PWD`
+* `GITHUB_TOKEN`
+* Any variable starting with `INPUT_`
+
+An example workflow with environment variables:
+
+```yaml
+...
+    - uses: soumyaDghosh/action-build@master
+      env:
+        MY_ENV_VAR: my-value
 ```
