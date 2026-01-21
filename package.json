@@ -22,14 +22,16 @@
     "node",
     "setup"
   ],
-  "author": "James Henstridge",
+  "author": "Soumyadeep Ghosh",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "@actions/exec": "^1.1.1"
+    "@actions/exec": "^1.1.1",
+    "js-yaml": "^4.1.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.10",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",

@@ -1,6 +1,6 @@
 name: 'Snapcraft Build'
 description: 'Build a Snapcraft project'
-author: 'James Henstridge'
+author: 'Soumyadeep Ghosh'
 branding:
   icon: 'package'
   color: 'orange'
@@ -20,6 +20,10 @@ inputs:
       Proprietary applications may want to disable this due to
       the information leakage.
     default: 'true'
+  enable-github-cache:
+    description: >
+      Whether to enable the usage of GitHub Actions Cache.
+    default: 'false'
   snapcraft-channel:
     description: >
       The Snapcraft channel to use
@@ -46,5 +50,5 @@ outputs:
   snap:
     description: 'The file name of the resulting snap.'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
