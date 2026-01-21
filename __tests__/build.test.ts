@@ -41,6 +41,9 @@ test('SnapcraftBuilder.build runs a snap build', async () => {
   const ensureLXD = jest
     .spyOn(tools, 'ensureLXD')
     .mockImplementation(async (): Promise<void> => {})
+  const setupEnvLXD = jest
+    .spyOn(tools, 'setupEnvLXD')
+    .mockImplementation(async (): Promise<void> => {})
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
     .mockImplementation(async (channel): Promise<void> => {})
@@ -70,7 +73,7 @@ test('SnapcraftBuilder.build runs a snap build', async () => {
   expect(ensureSnapcraft).toHaveBeenCalled()
   expect(execMock).toHaveBeenCalledWith(
     'sudo',
-    ['-u', user, '-E', 'snapcraft'],
+    ['-u', user, '-E', 'snapcraft', 'pack'],
     {
       cwd: projectDir,
       env: expect.objectContaining({
@@ -91,6 +94,9 @@ test('SnapcraftBuilder.build can disable build info', async () => {
     .mockImplementation(async (): Promise<void> => {})
   const ensureLXD = jest
     .spyOn(tools, 'ensureLXD')
+    .mockImplementation(async (): Promise<void> => {})
+  const setupEnvLXD = jest
+    .spyOn(tools, 'setupEnvLXD')
     .mockImplementation(async (): Promise<void> => {})
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
@@ -130,6 +136,9 @@ test('SnapcraftBuilder.build can set the Snapcraft channel', async () => {
   const ensureLXD = jest
     .spyOn(tools, 'ensureLXD')
     .mockImplementation(async (): Promise<void> => {})
+  const setupEnvLXD = jest
+    .spyOn(tools, 'setupEnvLXD')
+    .mockImplementation(async (): Promise<void> => {})
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
     .mockImplementation(async (channel): Promise<void> => {})
@@ -162,6 +171,9 @@ test('SnapcraftBuilder.build can pass additional arguments', async () => {
   const ensureLXD = jest
     .spyOn(tools, 'ensureLXD')
     .mockImplementation(async (): Promise<void> => {})
+  const setupEnvLXD = jest
+    .spyOn(tools, 'setupEnvLXD')
+    .mockImplementation(async (): Promise<void> => {})
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
     .mockImplementation(async (channel): Promise<void> => {})
@@ -185,7 +197,7 @@ test('SnapcraftBuilder.build can pass additional arguments', async () => {
   const user = os.userInfo().username
   expect(execMock).toHaveBeenCalledWith(
     'sudo',
-    ['-u', user, '-E', 'snapcraft', '--foo', '--bar'],
+    ['-u', user, '-E', 'snapcraft', 'pack', '--foo', '--bar'],
     expect.anything()
   )
 })
@@ -198,6 +210,9 @@ test('SnapcraftBuilder.build can pass UA token', async () => {
     .mockImplementation(async (): Promise<void> => {})
   const ensureLXD = jest
     .spyOn(tools, 'ensureLXD')
+    .mockImplementation(async (): Promise<void> => {})
+  const setupEnvLXD = jest
+    .spyOn(tools, 'setupEnvLXD')
     .mockImplementation(async (): Promise<void> => {})
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
@@ -222,7 +237,7 @@ test('SnapcraftBuilder.build can pass UA token', async () => {
   const user = os.userInfo().username
   expect(execMock).toHaveBeenCalledWith(
     'sudo',
-    ['-u', user, '-E', 'snapcraft', '--ua-token', 'test-ua-token'],
+    ['-u', user, '-E', 'snapcraft', 'pack', '--ua-token', 'test-ua-token'],
     expect.anything()
   )
 })

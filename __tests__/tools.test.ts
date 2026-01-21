@@ -2,7 +2,6 @@
 
 import * as fs from 'fs'
 import * as os from 'os'
-import * as path from 'path'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as tools from '../src/tools'
@@ -363,7 +362,7 @@ test('ensureLXDNetwork sets up iptables and warns about Docker', async () => {
     5,
     'dpkg',
     ['-l', 'moby-containerd'],
-    {ignoreReturnCode: true, silent: true}
+    { ignoreReturnCode: true, silent: true }
   )
   expect(execMock).toHaveBeenNthCalledWith(6, 'dpkg', ['-l', 'moby-runc'], {
     ignoreReturnCode: true,
@@ -417,7 +416,7 @@ test('ensureLXDNetwork sets up iptables and warns only about installed packages'
     5,
     'dpkg',
     ['-l', 'moby-containerd'],
-    {ignoreReturnCode: true, silent: true}
+    { ignoreReturnCode: true, silent: true }
   )
   expect(execMock).toHaveBeenNthCalledWith(6, 'dpkg', ['-l', 'moby-runc'], {
     ignoreReturnCode: true,
