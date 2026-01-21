@@ -1,7 +1,7 @@
 // -*- mode: javascript; js-indent-level: 2 -*-
 
 import * as core from '@actions/core'
-import {SnapcraftBuilder} from './build'
+import { SnapcraftBuilder } from './build'
 
 async function run(): Promise<void> {
   try {
@@ -12,8 +12,11 @@ async function run(): Promise<void> {
     const snapcraftChannel = core.getInput('snapcraft-channel')
     const snapcraftArgs = core.getInput('snapcraft-args')
     const uaToken = core.getInput('ua-token')
+    const enableGHCache =
+      (core.getInput('enable-github-cache') || 'false').toUpperCase() === 'TRUE'
 
     const builder = new SnapcraftBuilder({
+      enableGHCache,
       projectRoot,
       includeBuildInfo,
       snapcraftChannel,

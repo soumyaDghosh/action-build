@@ -4,6 +4,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as fs from 'fs'
 import * as os from 'os'
+import * as yaml from 'js-yaml'
 
 async function haveExecutable(path: string): Promise<boolean> {
   try {
@@ -39,7 +40,7 @@ export async function ensureLXDNetwork(): Promise<void> {
     'moby-runc'
   ]
   const installedPackages: string[] = []
-  const options = {silent: true, ignoreReturnCode: true}
+  const options = { silent: true, ignoreReturnCode: true }
   for (const mobyPackage of mobyPackages) {
     if ((await exec.exec('dpkg', ['-l', mobyPackage], options)) === 0) {
       installedPackages.push(mobyPackage)
@@ -99,4 +100,53 @@ export async function ensureSnapcraft(channel: string): Promise<void> {
     '--classic',
     'snapcraft'
   ])
+}
+
+export async function setupEnvLXD(
+  env: { [key: string]: string | undefined },
+  enableGHCache: boolean
+): Promise<void> {
+  core.info('Reading default profile of LXD...')
+  core.info('[command]/usr/bin/sudo lxc profile show default')
+
+  let stdout = ''
+  await exec.exec('sudo', ['lxc', 'profile', 'show', 'default'], {
+    silent: true,
+    listeners: {
+      stdout: (data: Buffer) => {
+        stdout += data.toString()
+      }
+    }
+  })
+  let profile = yaml.load(stdout) as any
+
+  profile.config = profile?.config || {}
+  const blockList = ['PATH', 'HOME', 'SHELL', 'USER', 'PWD', 'GITHUB_TOKEN']
+
+  for (const [key, value] of Object.entries(env)) {
+    if (
+      value !== undefined &&
+      !blockList.includes(key) &&
+      !key.startsWith('INPUT_')
+    ) {
+      profile.config[`environment.${key}`] = value
+    }
+  }
+
+  if (enableGHCache) {
+    core.info('Enabling GitHub Cache support...')
+    profile.config['environment.ACTIONS_RUNTIME_TOKEN'] =
+      process.env['ACTIONS_RUNTIME_TOKEN']
+    profile.config['environment.ACTIONS_RESULTS_URL'] =
+      process.env['ACTIONS_RESULTS_URL']
+    profile.config['environment.ACTIONS_CACHE_SERVICE_V2'] = 'on'
+    profile.config['environment.SCCACHE_GHA_ENABLED'] = 'on'
+  }
+
+  core.info('Updating default profile of LXD...')
+  core.info('[command]/usr/bin/sudo lxc profile edit default')
+  await exec.exec('sudo', ['lxc', 'profile', 'edit', 'default'], {
+    input: Buffer.from(yaml.dump(profile)),
+    silent: true
+  })
 }

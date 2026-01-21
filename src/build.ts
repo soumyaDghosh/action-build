@@ -25,6 +25,7 @@ function expandHome(p: string): string {
 }
 
 interface SnapcraftBuilderOptions {
+  enableGHCache?: boolean
   projectRoot: string
   includeBuildInfo: boolean
   snapcraftChannel: string
@@ -33,6 +34,7 @@ interface SnapcraftBuilderOptions {
 }
 
 export class SnapcraftBuilder {
+  enableGHCache: boolean
   projectRoot: string
   includeBuildInfo: boolean
   snapcraftChannel: string
@@ -40,6 +42,7 @@ export class SnapcraftBuilder {
   uaToken: string
 
   constructor(options: SnapcraftBuilderOptions) {
+    this.enableGHCache = options.enableGHCache ?? false
     this.projectRoot = expandHome(options.projectRoot)
     this.includeBuildInfo = options.includeBuildInfo
     this.snapcraftChannel = options.snapcraftChannel
@@ -48,9 +51,14 @@ export class SnapcraftBuilder {
   }
 
   async build(): Promise<void> {
-    core.startGroup('Installing Snapcraft plus dependencies')
+    core.startGroup('Installing LXD')
     await tools.ensureSnapd()
     await tools.ensureLXD()
+    core.endGroup()
+    core.startGroup('Setting up environment variables for LXD')
+    await tools.setupEnvLXD(process.env, this.enableGHCache ?? false)
+    core.endGroup()
+    core.startGroup('Installing Snapcraft')
     await tools.ensureSnapcraft(this.snapcraftChannel)
     core.endGroup()
 
@@ -59,7 +67,7 @@ export class SnapcraftBuilder {
       build_url: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     }
     // Copy and update environment to pass to snapcraft
-    const env: {[key: string]: string} = {}
+    const env: { [key: string]: string } = {}
     Object.assign(env, process.env)
     env['SNAPCRAFT_BUILD_ENVIRONMENT'] = 'lxd'
     env['SNAPCRAFT_IMAGE_INFO'] = JSON.stringify(imageInfo)
@@ -67,7 +75,7 @@ export class SnapcraftBuilder {
       env['SNAPCRAFT_BUILD_INFO'] = '1'
     }
 
-    const snapcraft = ['snapcraft']
+    const snapcraft = ['snapcraft', 'pack']
     if (this.snapcraftArgs) {
       snapcraft.push(...this.snapcraftArgs.split(/\s+/))
     }
