@@ -118,7 +118,7 @@ export async function setupEnvLXD(
       }
     }
   })
-  let profile = yaml.load(stdout) as any
+  const profile = yaml.load(stdout) as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   profile.config = profile?.config || {}
   const blockList = ['PATH', 'HOME', 'SHELL', 'USER', 'PWD', 'GITHUB_TOKEN']
